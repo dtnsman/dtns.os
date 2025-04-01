@@ -1,0 +1,4 @@
+set tips **hello world
+ib3.tips tips
+ib3.toast tips
+$.alert tips

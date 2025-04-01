@@ -1,0 +1,58 @@
+2025-4-1 11:36:28
+{"code":"EADDRINUSE","errno":-4091,"syscall":"listen","address":"::","port":3100}
+2025-4-1 11:36:28
+Error: listen EADDRINUSE: address already in use :::3100
+    at Server.setupListenHandle [as _listen2] (net.js:1331:16)
+    at listenInCluster (net.js:1379:12)
+    at Server.listen (net.js:1465:7)
+    at Object.<anonymous> (F:\dtns.os-v3.0\dtns.os\plugins\rt-turn\index.js:52:8)
+    at Module._compile (internal/modules/cjs/loader.js:1114:14)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:1143:10)
+    at Module.load (internal/modules/cjs/loader.js:979:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:819:12)
+    at Module.require (internal/modules/cjs/loader.js:1003:19)
+    at require (internal/modules/cjs/helpers.js:107:18)
+    at window.loadPluginsObj (F:\dtns.os-v3.0\dtns.os\plugins\loadPlugins.js:19:9)
+    at window.loadPlugins (F:\dtns.os-v3.0\dtns.os\plugins\loadPlugins.js:64:17)
+    at window.lx_routes (F:\dtns.os-v3.0\dtns.os\static\lx\routes\index.js:437:5)
+    at main_now (F:\dtns.os-v3.0\dtns.os\app.js:283:13)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+2025-4-1 11:36:44
+undefined
+2025-4-1 11:37:44
+undefined
+2025-4-1 11:51:11
+undefined
+2025-4-1 11:51:29
+undefined
+2025-4-1 11:58:46
+{"code":"EADDRINUSE","errno":-4091,"syscall":"listen","address":"::","port":3100}
+2025-4-1 11:58:46
+Error: listen EADDRINUSE: address already in use :::3100
+    at Server.setupListenHandle [as _listen2] (net.js:1331:16)
+    at listenInCluster (net.js:1379:12)
+    at Server.listen (net.js:1465:7)
+    at Object.<anonymous> (F:\dtns.os-v3.0\dtns.os\plugins\rt-turn\index.js:52:8)
+    at Module._compile (internal/modules/cjs/loader.js:1114:14)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:1143:10)
+    at Module.load (internal/modules/cjs/loader.js:979:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:819:12)
+    at Module.require (internal/modules/cjs/loader.js:1003:19)
+    at require (internal/modules/cjs/helpers.js:107:18)
+    at window.loadPluginsObj (F:\dtns.os-v3.0\dtns.os\plugins\loadPlugins.js:19:9)
+    at window.loadPlugins (F:\dtns.os-v3.0\dtns.os\plugins\loadPlugins.js:64:17)
+    at window.lx_routes (F:\dtns.os-v3.0\dtns.os\static\lx\routes\index.js:437:5)
+    at main_now (F:\dtns.os-v3.0\dtns.os\app.js:283:13)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+2025-4-1 11:59:48
+undefined
+2025-4-1 12:0:1
+undefined
+2025-4-1 12:22:58
+ReferenceError: chatid is not defined
+    at Object.sendUserInfoModifyMsg (F:\dtns.os-v3.0\dtns.os\static\lx\controller\groupchat_c.js:1759:101)
+    at Array.modifyUserInfoLogo (F:\dtns.os-v3.0\dtns.os\static\lx\controller\user_c.js:2054:17)
+2025-4-1 12:23:22
+undefined
+2025-4-1 13:21:44
+undefined

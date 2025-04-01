@@ -1,0 +1,9 @@
+{
+    "fintechsdk_API_KEY" : "*",
+    "fintechsdk_API_SECRET" : "*",
+    "fintechsdk_API_PASS" : "*",
+    "fintechsdk_BASE_URL" : "https://aws.*.com/",
+    "fintechsdk_user":{"private_key":"7L7n3tvXc5YQvFJ6L8fQuGwWFmCNpGrmbcvdzexrFoEY",
+                        "public_key":"k4AAuZcw19gi4QC5SGaLBy9Bs7dwZBZ68eN3EZprQuC6",
+                        "token":"dtns_qw1d0005K4edZyfxDmP7oaCjAHEQXHX2","web3name":"qw"}
+}

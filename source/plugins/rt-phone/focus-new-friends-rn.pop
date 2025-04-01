@@ -1,0 +1,132 @@
+#模拟点击，以便关注
+pop.func.define clickinto
+set xi 0
+array.get result xi airesult
+object.get airesult.bounds bs
+#ib3.tips bs
+set rstr [
+set dobj **{"dstr":" "}
+object.get dobj.dstr dstr
+$$.replaceAll bs rstr dstr
+= bs $ret
+set rstr ]
+$$.replaceAll bs rstr dstr
+= bs $ret
+set rstr ,
+$$.replaceAll bs rstr dstr
+= bs $ret
+
+set clickstr **"shell input tap "
++ clickstr bs clickstr
+
+set yps **{"action":""}
+object.set yps.action clickstr
+/rtphone/robot/do yps
+
+pop.func.end
+
+pop.func.define back
+set yps **{"action":" shell input keyevent BACK"}
+/rtphone/robot/do yps
+pop.func.end
+
+pop.func.define onestep
+
+pop.sleep 500
+
+#set reg_now_flag 1
+
+set yps **{"action":" push /Users/guozhifeng/node_project/svrdev/plugins/rt-phone/data/pic.png /sdcard/Pictures"}
+#/rtphone/robot/do yps
+
+set yps **{"action":" shell am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file:///sdcard/Pictures/pic.png"}
+#/rtphone/robot/do yps
+
+set yps **{"action":"shell am force-stop com.tencent.mobileqq"}
+#/rtphone/robot/do yps
+
+pop.sleep 300
+
+# am start -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -n com.tencent.mobileqq/com.tencent.mobileqq.activity.SplashActivity
+set yps **{"action":"shell am start -n com.tencent.mobileqq/com.tencent.mobileqq.activity.SplashActivity"}
+#/rtphone/robot/do 
+
+#移动一行
+set yps **{"action":"shell input swipe 500 752 500 500 1200"}
+/rtphone/robot/do yps
+
+#点击进入个人主页
+pop.sleep 100
+/rtphone/robot/ui/dump
+= dret $ret
+object.get dret.ui uijson
+set attr resource-id
+set val com.xingin.xhs:id/ji3
+$.g_2d_filter_uijson uijson attr val
+= result $ret
+clickinto
+
+#点赞
+pop.sleep 300
+/rtphone/robot/ui/dump
+= dret $ret
+#保存字符串--用于判断IP归属地
+$.JSON.stringify dret
+= allstr $ret
+ib3.toast allstr
+#该账号已被封禁
+set val 该账号已被封禁
+$$.indexOf allstr val
+= ipusaPos $ret
+set zero 0
+< ipusaPos zero isNotBaned
+object.get dret.ui uijson
+set attr resource-id
+set val com.xingin.xhs:id/ees
+$.g_2d_filter_uijson uijson attr val
+= result $ret
+clickinto
+
+#IP属地 notok
+pop.sleep 100
+/rtphone/robot/ui/dump
+= dret $ret
+object.get dret.ui uijson
+set attr resource-id
+set val com.xingin.xhs:id/gyv
+$.g_2d_filter_uijson uijson attr val
+= result $ret
+$.JSON.stringify result
+ib3.tips $ret
+object.get result.text ipstr
+set val IP属地：美国
+== ipstr val isUSA
+#ib3.tips ipstr
+
+#IP属地 ok
+set val IP属地：美国
+$$.indexOf allstr val
+= ipusaPos $ret
+set zero 0
+> ipusaPos zero isUSA
+&& isUSA isNotBaned isUSA
+
+#关注
+pop.sleep 100
+/rtphone/robot/ui/dump
+= dret $ret
+object.get dret.ui uijson
+set attr resource-id
+set val com.xingin.xhs:id/jq9
+$.g_2d_filter_uijson uijson attr val
+= result $ret
+pop.ifelse isUSA clickinto doNothing
+
+#back
+pop.ifelse isUSA back doNothing
+back
+
+pop.func.end
+
+set doloopFlag 1
+pop.do.while doloopFlag onestep

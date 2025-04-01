@@ -1,0 +1,54 @@
+{
+    "user_id": "user_8wSeyn7qNQsQEszf",
+    "session_id": "rtibchat-session-1743217506117-847312",
+    "history": [
+        {
+            "role": "system",
+            "content": "\n#你是一个非常有用的地图工具agent，负责将用户的地图请求转为地图工具的调用代码、返回poplang代码块。\n\n#地图工具清单\n##tool_name：maps_regeocode\n工具描述：将一个高德经纬度坐标转换为行政区划地址信息\n参数描述：{\"type\":\"object\",\"properties\":{\"location\":{\"type\":\"string\",\"description\":\"经纬度\"}},\"required\":[\"location\"]}\n\n##tool_name：maps_geo\n工具描述：将详细的结构化地址转换为经纬度坐标。支持对地标性名胜景区、建筑物名称解析为经纬度坐标\n参数描述：{\"type\":\"object\",\"properties\":{\"address\":{\"type\":\"string\",\"description\":\"待解析的结构化地址信息\"},\"city\":{\"type\":\"string\",\"description\":\"指定查询的城市\"}},\"required\":[\"address\"]}\n\n##tool_name：maps_ip_location\n工具描述：IP 定位根据用户输入的 IP 地址，定位 IP 的所在位置\n参数描述：{\"type\":\"object\",\"properties\":{\"ip\":{\"type\":\"string\",\"description\":\"IP地址\"}},\"required\":[\"ip\"]}\n\n##tool_name：maps_weather\n工具描述：根据城市名称或者标准adcode查询指定城市的天气\n参数描述：{\"type\":\"object\",\"properties\":{\"city\":{\"type\":\"string\",\"description\":\"城市名称或者adcode\"}},\"required\":[\"city\"]}\n\n##tool_name：maps_search_detail\n工具描述：查询关键词搜或者周边搜获取到的POI ID的详细信息\n参数描述：{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\",\"description\":\"关键词搜或者周边搜获取到的POI ID\"}},\"required\":[\"id\"]}\n\n##tool_name：maps_bicycling\n工具描述：骑行路径规划用于规划骑行通勤方案，规划时会考虑天桥、单行线、封路等情况。最大支持 500km 的骑行路线规划\n参数描述：{\"type\":\"object\",\"properties\":{\"origin\":{\"type\":\"string\",\"description\":\"出发点经纬度，坐标格式为：经度，纬度\"},\"destination\":{\"type\":\"string\",\"description\":\"目的地经纬度，坐标格式为：经度，纬度\"}},\"required\":[\"origin\",\"destination\"]}\n\n##tool_name：maps_direction_walking\n工具描述：步行路径规划 API 可以根据输入起点终点经纬度坐标规划100km 以内的步行通勤方案，并且返回通勤方案的数据\n参数描述：{\"type\":\"object\",\"properties\":{\"origin\":{\"type\":\"string\",\"description\":\"出发点经度，纬度，坐标格式为：经度，纬度\"},\"destination\":{\"type\":\"string\",\"description\":\"目的地经度，纬度，坐标格式为：经度，纬度\"}},\"required\":[\"origin\",\"destination\"]}\n\n##tool_name：maps_direction_driving\n工具描述：驾车路径规划 API 可以根据用户起终点经纬度坐标规划以小客车、轿车通勤出行的方案，并且返回通勤方案的数据。\n参数描述：{\"type\":\"object\",\"properties\":{\"origin\":{\"type\":\"string\",\"description\":\"出发点经度，纬度，坐标格式为：经度，纬度\"},\"destination\":{\"type\":\"string\",\"description\":\"目的地经度，纬度，坐标格式为：经度，纬度\"}},\"required\":[\"origin\",\"destination\"]}\n\n##tool_name：maps_direction_transit_integrated\n工具描述：公交路径规划 API 可以根据用户起终点经纬度坐标规划综合各类公共（火车、公交、地铁）交通方式的通勤方案，并且返回通勤方案的数据，跨城场景下必须传起点城市与终点城市\n参数描述：{\"type\":\"object\",\"properties\":{\"origin\":{\"type\":\"string\",\"description\":\"出发点经度，纬度，坐标格式为：经度，纬度\"},\"destination\":{\"type\":\"string\",\"description\":\"目的地经度，纬度，坐标格式为：经度，纬度\"},\"city\":{\"type\":\"string\",\"description\":\"公共交通规划起点城市\"},\"cityd\":{\"type\":\"string\",\"description\":\"公共交通规划终点城市\"}},\"required\":[\"origin\",\"destination\",\"city\",\"cityd\"]}\n\n##tool_name：maps_distance\n工具描述：距离测量 API 可以测量两个经纬度坐标之间的距离,支持驾车、步行以及球面距离测量\n参数描述：{\"type\":\"object\",\"properties\":{\"origins\":{\"type\":\"string\",\"description\":\"起点经度，纬度，可以传多个坐标，使用分号隔离，比如120,30;120,31，坐标格式为：经度，纬度\"},\"destination\":{\"type\":\"string\",\"description\":\"终点经度，纬度，坐标格式为：经度，纬度\"},\"type\":{\"type\":\"string\",\"description\":\"距离测量类型,1代表驾车距离测量，0代表直线距离测量，3步行距离测量\"}},\"required\":[\"origins\",\"destination\"]}\n\n##tool_name：maps_text_search\n工具描述：关键词搜，根据用户传入关键词，搜索出相关的POI\n参数描述：{\"type\":\"object\",\"properties\":{\"keywords\":{\"type\":\"string\",\"description\":\"搜索关键词\"},\"city\":{\"type\":\"string\",\"description\":\"查询城市\"},\"types\":{\"type\":\"string\",\"description\":\"POI类型，比如加油站\"}},\"required\":[\"keywords\"]}\n\n##tool_name：maps_around_search\n工具描述：周边搜，根据用户传入关键词以及坐标location，搜索出radius半径范围的POI\n参数描述：{\"type\":\"object\",\"properties\":{\"keywords\":{\"type\":\"string\",\"description\":\"搜索关键词\"},\"location\":{\"type\":\"string\",\"description\":\"中心点经度纬度\"},\"radius\":{\"type\":\"string\",\"description\":\"搜索半径\"}},\"required\":[\"location\"]}\n\n#举例：查询街道的经纬度坐标\n使用工具：maps_geo\n参数为：{\"tool_name\":\"maps_geo\",\"address\":\"禅城区祖庙\",\"city\":\"佛山市\"}\n返回的poplang代码块应如下面所示：\n```poplang\nset params **{\"tool_name\":\"maps_geo\",\"address\":\"禅城区祖庙\",\"city\":\"佛山市\"}\n/rtmap/tool/call params\n= call_result $ret\n```\n\n以下是#智能体#\n```poplang.agent\n#本智能体agent由poplang代码编程，功能为是地图工具agent提供功能代码\n\n#定义智能体的prompt\npop.func.define map_tool_prompt\nset prompt **dtns.rtmap地图工具agent支持操作LLM大语言模型通过对话查询地图\npop.func.end\n\n#定义智能体的结果result-prompt函数------将每次api-tool调用完成之后，调用本result函数，以便为LLM提供提示语。\npop.func.define map_result\nobject.get call_result.ret flag\nset tips **经过地图工具查询成功，JSON结果为：\nset failed **经过地图工具查询失败，JSON结果为：\n?= flag tips failed result_tips\nobject.get call_result.data data\n$.JSON.stringify data\n= data $ret\n+ result_tips data result_tips\nset tips **，请将结果描述为中文\n+ result_tips tips result\npop.func.end\n\n# agent全局变量，方便得到调用入口和结果prompt等。\nset agent_name dtns.rtmap\n#当拿到api-tools的调用结果后，使用这个来拼接结果，返回给llm查看并解析结果。\nset agent_callback map_result \n#声明描述（方便在后端使用？）\nset agent_promt map_tool_prompt\n```\n\n以下开始根据用户指令进行邮件的操作，直接返回poplang代码块。"
+        },
+        {
+            "role": "user",
+            "content": "查询广州天河区方圆E时光",
+            "model": "deepseek/deepseek-chat-v3-0324:free"
+        },
+        {
+            "role": "assistant",
+            "content": "```poplang\nset params **{\"tool_name\":\"maps_geo\",\"address\":\"广州天河区方圆E时光\",\"city\":\"广州市\"}\n/rtmap/tool/call params\n= call_result $ret\n```",
+            "model": "deepseek/deepseek-chat-v3-0324:free"
+        },
+        {
+            "role": "user",
+            "content": "经过地图工具查询成功，JSON结果为：{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"return\\\": [\\n    {\\n      \\\"country\\\": \\\"中国\\\",\\n      \\\"province\\\": \\\"广东省\\\",\\n      \\\"city\\\": \\\"广州市\\\",\\n      \\\"citycode\\\": \\\"020\\\",\\n      \\\"district\\\": \\\"天河区\\\",\\n      \\\"street\\\": [],\\n      \\\"number\\\": [],\\n      \\\"adcode\\\": \\\"440106\\\",\\n      \\\"location\\\": \\\"113.372514,23.126119\\\",\\n      \\\"level\\\": \\\"兴趣点\\\"\\n    }\\n  ]\\n}\"}],\"isError\":false}，请将结果描述为中文",
+            "model": "deepseek/deepseek-chat-v3-0324:free"
+        },
+        {
+            "role": "assistant",
+            "content": "广州天河区方圆E时光的经纬度坐标是：113.372514,23.126119。该地点位于中国广东省广州市天河区，行政区划代码为440106。",
+            "model": "deepseek/deepseek-chat-v3-0324:free"
+        },
+        {
+            "role": "user",
+            "content": "ip：14.212.93.177",
+            "model": "deepseek/deepseek-chat-v3-0324:free"
+        },
+        {
+            "role": "assistant",
+            "content": "```poplang\nset params **{\"tool_name\":\"maps_ip_location\",\"ip\":\"14.212.93.177\"}\n/rtmap/tool/call params\n= call_result $ret\n```",
+            "model": "deepseek/deepseek-chat-v3-0324:free"
+        },
+        {
+            "role": "user",
+            "content": "经过地图工具查询成功，JSON结果为：{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"province\\\": \\\"广东省\\\",\\n  \\\"city\\\": \\\"佛山市\\\",\\n  \\\"adcode\\\": \\\"440600\\\",\\n  \\\"rectangle\\\": \\\"112.9815423,22.91929652;113.2702553,23.1266855\\\"\\n}\"}],\"isError\":false}，请将结果描述为中文",
+            "model": "deepseek/deepseek-chat-v3-0324:free"
+        },
+        {
+            "role": "assistant",
+            "content": "IP地址14.212.93.177的定位信息如下：\n- 省份：广东省\n- 城市：佛山市\n- 行政区划代码：440600\n- 所在区域范围：经度112.9815423至113.2702553，纬度22.91929652至23.1266855",
+            "model": "deepseek/deepseek-chat-v3-0324:free"
+        }
+    ],
+    "time": 1743217506,
+    "datetime": "2025-03-29 11:05",
+    "save_time": 1743217733,
+    "save_datetime": "2025-03-29 11:08"
+}

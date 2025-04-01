@@ -1,0 +1,135 @@
+{
+    "file_temp":"file_temp/",
+    "dtns_db_path":"data/",
+    "hub_db_path":"data/",
+    "log_path":"logs/",
+    "g_ib3_node_open_inner_chain_flag":true,
+    "g_dnalink_node_allow_user_sync":true,
+    "g_dnalink_node_allow_user_sync_no_login" : true,
+    "g_dnalink_node_allow_vip_sync" : false,
+    "g_dnalink_node_allow_vip_sync_params_chatid" : null,
+    "g_sync_files_flag" : false,
+    "g_dweb_fee" : 1,
+    "g_system_tax" : 0.3,
+    "g_system_tax_gas" : 1,
+    "g_system_tax_setting" : null,
+    "g_system_tax_setting_map" : {"tax:svr":[{"token":"mark_svr000000000000000000000000000","tax":0.3,"type":"tax"}]},
+    "g_tns_nslookup_url" : "https://static.dtns.top/tns-urls.json",
+    "g_turn_nslookup_url" : "https://static.dtns.top/turn-urls.json",
+    "g_tns_default_url" : "https://groupbuying.opencom.cn:446",
+    "g_phones_default_url" : "https://static.dtns.top/phones.json",
+    "g_dtns_nslookup_static_urls" : ["http://static.dtns.forklist.opencom.cn","http://static.dtns.opencom.cn"],
+    "g_forklist_user" : {"private_key":"Bq1gkoP7QKtWEyM8AKXkQtX47FkYyNp4DoKA5UybNvmu",
+        "public_key":"iZepdAZ9MypncczGbhuCKQPFa2GAT8CCz15REAzHLJxW",
+        "token":"dtns_nftlist1d00037KU38X3CkS16XE55T7x",
+        "forkid":"FORKFamwBeQxUW3GJmA9b3A66022716C7C172F08F805CBE67F47816AAC",
+        "web3name":"nftlist"},
+    "g_system_send_notice_login_device_notice_flag" : true,
+    "dtns_root_keys" : {"private_key":"AZXztuShCxRifFJgmoGYR7vkbECdD5vXYTDyTtiQYr8s",
+                "public_key":"zaa4ywHqbNvsFbYpxZ4NMbWsmQ45d1NyL1eDiDxEaDJb",
+                "token":"dtns_svr000app2QChoYph6z3yN4e2k5D66md"},
+    "g_dtns_network_client" : true,
+
+    "g_dtns_network_hmac_key" : "***",
+    "g_dtns_hmac_key" : "***",
+
+    "g_score_setting" : {
+        "openflag":true,
+        "name":"","symbol":"$","emoji":"","logo":"","agio":100,
+        "web3app_token":"dtns_svr000app2QChoYph6z3yN4e2k5D66md"
+    },
+    "g_dtns_network_client" : true,
+
+    "g_turn_server_config" : [
+        {
+        "urls":[
+            "turn:groupbuying.opencom.cn:3478"
+            ],
+            "username": "user1",
+            "credential": "YjXverJx231vJPok"
+        }
+    ],
+    "g_dtns_network_static_hosts" : {
+        "main":{
+            "turn_urls": [
+                "turn:groupbuying.opencom.cn:3478"
+            ],
+            "tns_urls": [
+                "https://groupbuying.opencom.cn:446"
+            ],
+            "phones_urls": [
+                "https://static.dtns.top/phones.json"
+            ],
+            "network": "main.dtns"
+        },
+        "ldx":{
+            "turn_urls": [
+                "turn:groupbuying.opencom.cn:3478"
+            ],
+            "tns_urls": [
+                "http://tns.dtns.top"
+            ],
+            "phones_urls": [
+                "https://static.dtns.top/phones.json"
+            ],
+            "network": "x.dtns"
+        },
+        "ld":{
+            "turn_urls": [
+                "turn:groupbuying.opencom.cn:3478"
+            ],
+            "tns_urls": [
+                "http://127.0.0.1:3000"
+            ],
+            "phones_urls": [
+                "https://static.dtns.top/phones.json"
+            ],
+            "network": "x.dtns"
+        },
+        "dev.dtns":{
+            "turn_urls": [
+                "turn:static.dtns.top:3478"
+            ],
+            "tns_urls": [
+                "http://dev.dtns.dtns.top"
+            ],
+            "phones_urls": [
+                "https://static.dtns.top/phones.json"
+            ],
+            "network": "dev.dtns"
+        },
+        "loc.dtns":{
+            "turn_urls": [
+                "turn:127.0.0.1:3478"
+            ],
+            "tns_urls": [
+                "http://127.0.0.1:3100"
+            ],
+            "phones_urls": [
+                "https://static.dtns.top/phones.json"
+            ],
+            "network": "loc.dtns"
+        },
+        "dtns.network":{
+            "turn_urls": [
+                "turn:groupbuying.opencom.cn:3478"
+            ],
+            "tns_urls": [
+                "https://tns.dtns.top"
+            ],
+            "phones_urls": [
+                "https://static.dtns.top/phones.json"
+            ],
+            "network": "x.dtns"
+        }
+    },
+    "g_user_session_timeout":604800,
+    "g_file_download_not_need_session_flag":true,
+    "g_dweb_list_not_need_session_flag":true,
+    "defaultRTCRoomID" : "svr",
+    "ll_config" : {"roomid":"svr","redis_key":"FORKList_key:","init_console_user":"user_9CcLMDTUBgwFZM9V"},
+    "g_dev_roomid" : "locib",
+    "g_dev_port" : 33233,
+    "g_dtns_http_port":12666,
+    "g_dev_log_open_flag" : false
+}

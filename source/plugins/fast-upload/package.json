@@ -1,0 +1,12 @@
+{
+    "name": "fast_upload",
+    "version": "1.0.0",
+    "description": "",
+    "main": "fast-upload.js",
+    "scripts": {},
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "eccrypto-js": "^5.4.0"
+    }
+}

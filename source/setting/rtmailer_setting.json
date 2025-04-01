@@ -1,0 +1,10 @@
+{
+    "host": "smtp.qq.com", 
+    "port": 465,
+    "secure": true,
+    "auth": {
+        "user":"xlee@qq.com",
+        "pass": "***"
+    },
+    "from":"\"发送人\" <xlee@qq.com>"
+}

@@ -1,0 +1,66 @@
+
+pop.func.define checkRecordNow
+/rtpc/screen/color?x=1525&y=19
+object.get $ret.hex hex
+ib3.tips hex
+set chex ff0068
+== hex chex recordNowFlag
+ib3.tips recordNowFlag
+pop.func.end
+
+pop.func.define recordStatusOk
+/rtpc/screen/color?x=1714&y=61
+object.get $ret.hex hex
+ib3.tips hex
+set cxhex ff0068
+== hex cxhex recordStatusOkFlag
+pop.func.end
+
+pop.func.define conRecord
+/rtpc/mouse/move?x=858&y=553
+pop.sleep 3000
+/rtpc/mouse/click
+pop.func.end
+
+pop.func.define ctrlKClick
+set p **{"key":"K","p":"[\"control\"]"}
+/rtpc/key/tap p
+pop.func.end 
+
+pop.func.define intoRecord
+/rtpc/mouse/move?x=1714&y=61
+pop.sleep 1000
+/rtpc/mouse/click
+pop.sleep 3500
+/rtpc/mouse/move?x=1810&y=59&click=true
+pop.func.end 
+
+pop.func.define directRecord
+ctrlKClick
+pop.sleep 1000
+intoRecord
+pop.func.end 
+
+pop.func.define startRecord
+#ctrlKClick
+#/rtpc/mouse/move?x=1714&y=61
+recordStatusOk
+pop.ifelse recordStatusOkFlag intoRecord directRecord
+pop.func.end 
+
+pop.func.define record
+checkRecordNow
+pop.ifelse recordNowFlag conRecord startRecord
+pop.func.end
+
+pop.sleep 5000
+record
+
+pop.func.define loop
+pop.sleep 30000
+record
+pop.func.end
+
+set flag 1
+pop.do.while flag loop
+#checkRecordNow

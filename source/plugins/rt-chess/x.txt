@@ -1,0 +1,3 @@
+position fen rnbakabnr/9/1c2c4/p1p3p1p/9/4p1P2/P1P5P/1C5C1/9/RNBAKABNR w
+go depth 20
+go movestogo 1
