@@ -73,7 +73,7 @@ class DTNSManager
 
         let iCnt = 30 //2023-10-9  避免死循环等待事件的发生
         //while(!this.web3apps && rpc_client && (iCnt--)>=0) await rpc_client.sleep(100)
-        while(!this.web3apps && (iCnt--)>=0) await new Promise((resolve)=>setTimeout(resolve,100))
+        if(web3name.indexOf('loc')<0) while(!this.web3apps && (iCnt--)>=0) await new Promise((resolve)=>setTimeout(resolve,100))
         let web3appInfo = await this.nslookup(dtnsUrl) //先查询，是否存在于cached中
         if(window.g_dtns_network_static_hosts && window.g_dtns_network_static_hosts[web3name])
         {
@@ -410,7 +410,7 @@ class DTNSManager
         if(result){
             this.web3nameDTNSMap = new Map()
             this.networkInfoMap  = new Map()
-            this.web3apps = result.list
+            this.web3apps = result.list ? result.list : []
             for(let key in result.networks)
             {
                 console.log('networks-key:'+key,result.networks[key])

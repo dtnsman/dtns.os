@@ -192,7 +192,8 @@ class RTCHost
             this.socket.on("connect_error", async (err) => {
                 //reconnection: true  保证了自动重连
                 console.log('connect_error:'+err,err)
-                await This.sleep(2000)
+                This.last_connect_error_cnt = This.last_connect_error_cnt ? This.last_connect_error_cnt+1:1
+                await This.sleep(This.last_connect_error_cnt*2000)
                 This.check_and_reconnect()
                 // if(!This.reconnect_flag)
                 // {
@@ -983,7 +984,7 @@ class RTCHost
                 console.log('_channel.onerror',event)
             };
             peer.on('data', async (data)=>{
-                console.log('recv data:'+data.length)//+' is:'+data.slice(0,2).indexOf('{'))
+                console.log('recv data:'+data.length,data)//+' is:'+data.slice(0,2).indexOf('{'))
                 if(data.slice(0,2).indexOf('{')==0)//.indexOf('{')==0)
                 {
                     data = This.parseJSON(data)
@@ -1034,6 +1035,7 @@ class RTCHost
                     let buff = data.slice(strBegin.length+2+paramsSize+pkgSize+paramLength,strBegin.length+2+paramsSize+pkgSize+paramLength+pkgLength)
                     
                     let params = JSON.parse(paramStr)
+                    console.log('ondata-params:',paramStr,params)
                     if(strBegin.length+2+paramsSize+pkgSize+paramLength+pkgLength!= data.length && !This.dataCallBackSession.has(params.callid+':'+params.pos))
                     {
                         console.log('read data pkg error! happen on length:'+(strBegin.length+2+paramsSize+pkgSize+paramLength+pkgLength)+' need:'+data.length)
@@ -1096,6 +1098,8 @@ class RTCHost
                             peer.send(writeBuffer)
                         }
                     }
+                }else{
+                    console.log('undeal-recv-data:',data)
                 }
             })
             this.peerMap.set(peer.channelName,peer)
