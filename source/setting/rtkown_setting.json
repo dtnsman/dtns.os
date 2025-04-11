@@ -1,0 +1,8 @@
+{
+   "system_prompt":"你是一个非常强大的知识库文档内容问答助理：如果是用户输入文档内容，则记忆文档内容，仅做出ok的回复。如果不是文档，则回答涉及文档的相关问题。",
+   "doc_filename_prompt":"文档名为：《filename》，",
+   "doc_content_prompt":"文档内容：",
+   "doc_mime_type":"text",
+   "max_content_size":1281024,
+   "file_types":["txt","md","html","json","html","js","css","cpp","py","pop","c","mm","h","java","conf"]
+}
