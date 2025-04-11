@@ -237,7 +237,7 @@ window.plugins = [
         desc:'rtturn api plugin',
         author:'poplang',
         date:'2025-2-6',
-        nodejs:false,
+        nodejs:true,
         browser:false,
     },
     {
@@ -309,6 +309,18 @@ window.plugins = [
         desc:'rtdatalink api plugin',
         author:'poplang',
         date:'2025-4-7',
+        nodejs:true,
+        browser:false,
+    },
+    {
+        name:'rtkown',
+        path:'plugins/rt-kown/index.js',
+        url:'./plugins/rt-kown/index.js',
+        url_nodejs:'./rt-kown/index.js',
+        index:'rtkown_c',
+        desc:'rtkown api plugin',
+        author:'poplang',
+        date:'2025-4-11',
         nodejs:true,
         browser:false,
     }
