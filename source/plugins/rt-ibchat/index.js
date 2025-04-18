@@ -394,6 +394,18 @@ rtibchat_c.saveSession = async function(req,res)
         })
         fastSaveRet.first_question =history &&history.length>0 ? 
         (history[0].content.length == 2 && history[0].content[0].type == 'text' ?  history[0].content[0].text :  history[0].content):'空问题'
+        
+        //将最后一个问题与之合并
+        if(history.length>=4)
+        {
+            let userLastQuestionItem = history[history.length-2]
+            let userLastQuestion = userLastQuestionItem.content.length == 2 
+                && userLastQuestionItem.content[0].type == 'text' 
+                ? userLastQuestionItem.content[0].text : userLastQuestionItem.content
+            if(userLastQuestion && userLastQuestion.length>2)
+            fastSaveRet.first_question += '————【补充问题】'+userLastQuestion
+        }
+        
         fastSaveRet.img_id = img_id
         return res.json(fastSaveRet)
     }

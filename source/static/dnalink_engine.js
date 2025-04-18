@@ -833,7 +833,8 @@ class DNALinkEngine
         let y_state = await this.queryTokenState(token_y)
         txjson.list_x = x_state.token_state_p
         txjson.list_y = y_state.token_state_p
-        if(!txjson.list_x || !txjson.list_y)
+
+        if(!txjson.list_x && txjson.opcode != this.fsm_config.OP_FORK || !txjson.list_y)
         {
             let retObj = {ret:false,msg:'token may be not fork!',x_state,y_state,txjson}
             let sendJSONRet = await this.s_updateTx2TokenWriteNowQueueResult(txid,retObj);

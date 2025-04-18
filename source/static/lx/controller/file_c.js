@@ -939,7 +939,7 @@ window.file_c.upload_file =upload_file;
 async function upload_file(req, res) {
     let {user_id,s_id,file_kind} = str_filter.get_req_data(req)
 
-    if(!file_kind)  return res.json({ret:false,msg:"file_kind error"})
+    // if(!file_kind)  return res.json({ret:false,msg:"file_kind error"})
 
     let str = await user_redis.get(ll_config.redis_key+":session:"+user_id+"-"+s_id)
     if(!str) return res.json({ret:false,msg:"session error"})
@@ -966,7 +966,8 @@ async function upload_file(req, res) {
     console.log("fileInfo:",fileInfo)
 
     //映射对应的img-info
-    let forkObjRet = await rpc_query(OBJ_API_BASE+"/fork",{token:OBJ_TOKEN_ROOT,space:'file'+file_kind})
+    let forkObjRet = await rpc_query(OBJ_API_BASE+"/fork",{token:OBJ_TOKEN_ROOT,
+        space:file_kind == 'file'?file_kind:(file_kind ?  'file'+file_kind:'file')})
     if(!forkObjRet || !forkObjRet.ret)
     {
         return res.json({ret:false,msg:"file fork obj-id failed"})
@@ -1230,7 +1231,7 @@ async function download_file(req, res) {
     let {user_id,s_id,filename,file_kind,flv,begin,len} = str_filter.get_req_data(req)
 
     if(!filename) return res.json({ret:false,msg:'filename is empty'})
-    if(!file_kind) return res.json({ret:false,msg:'file_kind is empty'})
+    // if(!file_kind) return res.json({ret:false,msg:'file_kind is empty'})
 
     let str = await user_redis.get(ll_config.redis_key+":session:"+user_id+"-"+s_id)
     if(!str && !window.g_file_download_not_need_session_flag) return res.json({ret:false,msg:"session error"})
@@ -1304,8 +1305,10 @@ async function download_file(req, res) {
                     }
                 }
                 delete data.data
+                saveFlag  = true
+                return 
             }else{
-                res.json(data?data:{ret:false,msg:'download from dnalink-engine failed'})
+                return res.json(data?data:{ret:false,msg:'download from dnalink-engine failed'})
             }
         }
         else

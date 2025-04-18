@@ -60,27 +60,59 @@ async function bindDevice(req,res)
     let recoverKey = await key_util.recoverPublickey(sign,deviceHash)// await eccryptoJS.recover(deviceHash,key_util.bs58Decode(sign),true)
     // recoverKey = key_util.bs58Encode(recoverKey)
     let recoverKey2 = sign2 ? await key_util.recoverPublickey(sign2,deviceHash) : null//  await eccryptoJS.recover(deviceHash,key_util.bs58Decode(sign2),true):null
+    let fast_did_by_dtns_user_id= null
     // recoverKey2 =recoverKey2? key_util.bs58Encode(recoverKey2) :null
     console.log('recoverKey:',recoverKey,'recoverKey2:',recoverKey2,sign2,'len:'+recoverKey.length,public_key)
     //先判断是否是内部接口 fix the bug on 2023/3/23 18:37
     if(req.roomid.indexOf('dtns-inner-room') != 0){
         //仅针对dtns-user之ecc-keys签名的授权生成目标web3app之dtns-device-id
         //（其中--参数public_key是目标dtns-device-id的参数---用于生成新的dtns-device-id并且设备它的web3_key--生成逻辑在下面有）
-        let {user_id,s_id} =  str_filter.get_req_data(req)
-        let ustr = await user_redis.get(ll_config.redis_key+":session:"+user_id+"-"+s_id)
-        if(!ustr) return res.json({ret:false,msg:'no pm to visit api-bindDevice'})
-        let userInfoRet = await rpc_api_util.s_query_token_info(USER_API_BASE,user_id,'assert')
-        if(!userInfoRet) return res.json({ret:false,msg:'no pm to visit api-bindDevice(userInfo is empty)'})
-        let dtns_user_id = userInfoRet.dtns_user_id
-        let dtnsUserStates = await rpc_query(DTNS_API_BASE+'/chain/states',{token:dtns_user_id})
-        if(!dtnsUserStates || !dtnsUserStates.ret) return res.json({ret:false,msg:'no pm to visit api-bindDevice(dtns-user token-states is empty)'})
-        const dtns_user_public_key = dtnsUserStates.web3_key ? dtnsUserStates.web3_key  :dtnsUserStates.public_key
-        //判断是否为dtns-user之ecc-keys的web3sign授权
-        //（与pop-safe-sms的【短信授权】不同，这个直接是【dtns-user设备授权】）
-        console.log('recoverKey、dtns_user_public_key：',recoverKey2,dtns_user_public_key)
-        if(recoverKey2!=dtns_user_public_key) return res.json({ret:false,msg:'no pm to visit api-bindDevice(recover2-publicKey not equal to dtns-user-public_key)'})
-        phoneHash = userInfoRet.phoneHash
-        phoneEnInfo = userInfoRet.phoneEnInfo
+        if(!window.g_bind_device_easy_way) //这是严格模式
+        {
+            let {user_id,s_id} =  str_filter.get_req_data(req)
+            // let ustr = await user_redis.get(ll_config.redis_key+":session:"+user_id+"-"+s_id)
+            // if(!ustr) return res.json({ret:false,msg:'no pm to visit api-bindDevice'})
+            let userInfoRet = await rpc_api_util.s_query_token_info(USER_API_BASE,user_id,'assert')
+            if(!userInfoRet) return res.json({ret:false,msg:'no pm to visit api-bindDevice(userInfo is empty)'})
+            let dtns_user_id = userInfoRet.dtns_user_id
+            fast_did_by_dtns_user_id = dtns_user_id
+            let dtnsUserStates = await rpc_query(DTNS_API_BASE+'/chain/states',{token:dtns_user_id})
+            if(!dtnsUserStates || !dtnsUserStates.ret) return res.json({ret:false,msg:'no pm to visit api-bindDevice(dtns-user token-states is empty)'})
+            const dtns_user_public_key = dtnsUserStates.web3_key ? dtnsUserStates.web3_key  :dtnsUserStates.public_key
+            //判断是否为dtns-user之ecc-keys的web3sign授权
+            //（与pop-safe-sms的【短信授权】不同，这个直接是【dtns-user设备授权】）
+            console.log('recoverKey、dtns_user_public_key：',recoverKey2,dtns_user_public_key)
+            if(recoverKey2!=dtns_user_public_key) return res.json({ret:false,msg:'no pm to visit api-bindDevice(recover2-publicKey not equal to dtns-user-public_key)'})
+            phoneHash = userInfoRet.phoneHash
+            phoneEnInfo = userInfoRet.phoneEnInfo
+        }
+        //所有的dtns-device-id均可验证新的设备ID  2025-4-16新增
+        //也支持使用第三方的web3name对应的dtns-device-id来认证新的设备
+        // ————（新web3name!=认证的web3name，并且认证的web3name不限于dtns————也支持其它的web3name）
+        if(window.g_bind_device_easy_way)
+        {
+            let tokenInfoRet = await rpc_query(DTNS_API_BASE+'/chain/map/value',
+                {token:DTNS_TOKEN_ROOT,map_key:'ecc-pubkey:'+recoverKey2}) //得到映射的值  phoneHash本质就是phone，由phone得到user-id
+            console.log('recoverKey2-tokenInfoRet',tokenInfoRet)
+            if(!tokenInfoRet ||!tokenInfoRet.ret ||!tokenInfoRet.map_value)
+            {
+                return res.json({ret:false,msg:'dtns-device-id unexists!'})
+            }
+            //判断设备ID格式是否正确（是否是该web3app所需的格式）
+            let dtns_device_id = tokenInfoRet.map_value
+            fast_did_by_dtns_user_id = dtns_device_id
+
+            let deviceObjInfo = await rpc_api_util.s_query_token_info(DTNS_API_BASE,dtns_device_id,'assert')
+            if(!deviceObjInfo) return res.json({ret:false,msg:'query device-obj-info is null, maybe not synced!'})
+
+            let list = await rpc_api_util.s_query_token_list(DTNS_API_BASE,dtns_device_id,'hold',0,10000,true,null)
+            console.log('dtns-device-hold-list:',list)
+            if(!list || list.length==0 || list.length!=1 || !list[0].token_x)
+                return res.json({ret:false,msg:'dtns-device-id not allowed by dtns-user-id,  dtns-user-id unexists!'})
+
+            phoneHash = deviceObjInfo.phoneHash
+            phoneEnInfo = deviceObjInfo.phoneEnInfo
+        }
     }
     //无论如何，recoverKey==public_key，确保device-ecc-keys是正确的参数
     if(recoverKey!=public_key)
@@ -113,6 +145,10 @@ async function bindDevice(req,res)
         obj.regist_time = parseInt(new Date().getTime()/1000)//fix the bug on 2023/3/23 str_filter.GetDateTimeFormat(obj.regist_time)
         obj.deviceName = deviceName //fix the bug on 2023/3/23
         obj.user_name = deviceName //fix the bug on 2023/3/23（避免昵称ll-con-kmm泄露--也是重点之一）
+        if(fast_did_by_dtns_user_id)
+        {
+            obj.fast_did_by_dtns_user_id = fast_did_by_dtns_user_id
+        }
     }
     else{
         //#1 fork-dtns-user-id
@@ -148,7 +184,10 @@ async function bindDevice(req,res)
         let mc_logos_list =await mc_logos.get_list()//[]// await require('../mc_logos').get_list();
         let myTmpLogo = mc_logos_list[bind_user_id.split('_')[1].substring(15,17).charCodeAt()%mc_logos_list.length]
         obj = {phone,phoneHash,phoneEnInfo,dtns_user_id,public_key,user_name,logo:myTmpLogo,user_id:bind_user_id,by_invite_code:invite_code,regist_time}
-
+        if(fast_did_by_dtns_user_id)
+        {
+            obj.fast_did_by_dtns_user_id = fast_did_by_dtns_user_id
+        }
         let assertRet = await rpc_query(USER_API_BASE+"/op",{token_x:USER_TOKEN_ROOT,token_y:bind_user_id,opcode:'assert',opval:JSON.stringify(obj),extra_data:phoneHash});
         if(!assertRet || !assertRet.ret) return res.json({ret: false, msg: "assert phone-info failed"})
         // obj.regist_time = str_filter.GetDateTimeFormat(regist_time)
@@ -270,14 +309,26 @@ async function loginDevice(req,res)
     //#0 先行验证
     let hash =await key_util.hashVal(web3name+':'+timestamp)
     let recoverKey = await key_util.recoverPublickey(sign,hash)
+    let query_dtns_device_info_by_dtns_manager_flag = false
 
     //由ecc-pubkey得到dtns-device-id
-    let tokenInfoRet = await rpc_query(DTNS_API_BASE+'/chain/map/value',
-                {token:DTNS_TOKEN_ROOT,map_key:'ecc-pubkey:'+recoverKey}) //得到映射的值  phoneHash本质就是phone，由phone得到user-id
+    let tokenInfoRet = await rpc_query(DTNS_API_BASE+'/chain/map/value',{token:DTNS_TOKEN_ROOT,map_key:'ecc-pubkey:'+recoverKey}) //得到映射的值  phoneHash本质就是phone，由phone得到user-id
     console.log('tokenInfoRet',tokenInfoRet)
     if(!tokenInfoRet ||!tokenInfoRet.ret ||!tokenInfoRet.map_value)
     {
-        return res.json({ret:false,msg:'dtns-device-id unexists!'})
+        if(window.g_dtnsManager && web3name!='dtns')
+        {
+            query_dtns_device_info_by_dtns_manager_flag = true
+            let dtnsParams = {token:DTNS_TOKEN_ROOT,map_key:'ecc-pubkey:'+recoverKey}
+            let url = '/chain/map/value'
+            tokenInfoRet =  await g_dtnsManager.queryDTNSNetwork(url,dtnsParams)
+            tokenInfoRet = !tokenInfoRet ||!tokenInfoRet.ret ||!tokenInfoRet.map_value ? await g_dtnsManager.queryDTNSNetwork(url,dtnsParams) : tokenInfoRet
+            tokenInfoRet = !tokenInfoRet ||!tokenInfoRet.ret ||!tokenInfoRet.map_value ? await g_dtnsManager.queryDTNSNetwork(url,dtnsParams) : tokenInfoRet
+            tokenInfoRet = !tokenInfoRet ||!tokenInfoRet.ret ||!tokenInfoRet.map_value ? await g_dtnsManager.queryDTNSNetwork(url,dtnsParams) : tokenInfoRet
+            console.info('【user-login-by-dtns-manager】query-dtns.network-ecc-pubkey:'+recoverKey+'--result:',tokenInfoRet)
+        }
+        if(!tokenInfoRet ||!tokenInfoRet.ret ||!tokenInfoRet.map_value)
+            return res.json({ret:false,msg:'dtns-device-id unexists!'})
     }
 
     //判断设备ID格式是否正确（是否是该web3app所需的格式）
@@ -296,8 +347,45 @@ async function loginDevice(req,res)
     let list = await rpc_api_util.s_query_token_list(DTNS_API_BASE,dtns_device_id,'hold',0,10000,true,null)
     console.log('dtns-device-hold-list:',list)
     if(!list || list.length==0 || list.length!=1 || !list[0].token_x)
-         return res.json({ret:false,msg:'dtns-device-id not allowed by dtns-user-id,  dtns-user-id unexists!'})
-    
+    {
+        //使用g_dtnsManager进行检测
+        if(window.g_dtnsManager  && web3name!='dtns')
+        {
+            query_dtns_device_info_by_dtns_manager_flag = true
+            let dtnsParams = {token:dtns_device_id,opcode:'hold',isx:false,begin:0,len:10000}
+            let url = '/chain/relations'
+            let getList = async function(url,dtnsParams) {
+                let ret = await g_dtnsManager.queryDTNSNetwork(url,dtnsParams)
+                if(!ret ) return null
+                return ret.list
+            }
+            list =  await getList(url,dtnsParams)
+            list = !list || list.length==0 || list.length!=1 || !list[0].token_x ? await getList(url,dtnsParams) : list
+            list = !list || list.length==0 || list.length!=1 || !list[0].token_x ? await getList(url,dtnsParams) : list
+            list = !list || list.length==0 || list.length!=1 || !list[0].token_x ? await getList(url,dtnsParams) : list
+            console.info('【user-hold-by-dtns-manager】query-dtns.network-hold-relations:'+dtns_device_id+'--result:',list)
+        }
+        if(!list || list.length==0 || list.length!=1 || !list[0].token_x)
+            return res.json({ret:false,msg:'dtns-device-id not allowed by dtns-user-id,  dtns-user-id unexists!'})
+    }
+    //读取dtns.network的缓存
+    let static_deviceObjInfo = null
+    if(query_dtns_device_info_by_dtns_manager_flag)
+    {
+        let queryInfo = async function() 
+        {
+            let infoRet =await g_dtnsManager.queryDTNSNetwork('/chain/opcode',{token: dtns_device_id,opcode:'assert',begin:0,len:1})
+            if(!infoRet || !infoRet.ret) return null;
+            return JSON.parse(JSON.parse(infoRet.list[0].txjson).opval)
+        }
+        let deviceObjInfo = await queryInfo()
+        deviceObjInfo = deviceObjInfo ? deviceObjInfo : await queryInfo()
+        deviceObjInfo = deviceObjInfo ? deviceObjInfo : await queryInfo()
+        deviceObjInfo = deviceObjInfo ? deviceObjInfo : await queryInfo()
+        if(!deviceObjInfo) return res.json({ret:false,msg:'[dtns-manager]query device-obj-info is null, maybe not synced!'})
+        static_deviceObjInfo = deviceObjInfo
+    }
+
     //判断user-id是否与dtns_user_id绑定，如无，则代表着该web3-user-id已经改绑定其他的dtns-user-id（则代表【禁止】权限）
     let dtns_user_id = list[0].token_x
     let user_id = null,obj = null
@@ -319,8 +407,8 @@ async function loginDevice(req,res)
         console.log('tokenInfoRet',tokenInfoRet)
         if(!bindUserInfoRet ||!bindUserInfoRet.ret ||!bindUserInfoRet.map_value)
         {
-            console.log('into bind UserInfo')
-            let deviceObjInfo = await rpc_api_util.s_query_token_info(DTNS_API_BASE,dtns_device_id,'assert')
+            console.log('into bind UserInfo,static_deviceObjInfo:',static_deviceObjInfo)
+            let deviceObjInfo = static_deviceObjInfo ? static_deviceObjInfo : await rpc_api_util.s_query_token_info(DTNS_API_BASE,dtns_device_id,'assert')
             if(!deviceObjInfo) return res.json({ret:false,msg:'query device-obj-info is null, maybe not synced!'})
 
             const {phone,phoneHash,phoneEnInfo,dtns_user_id,public_key,user_name,logo,by_invite_code,regist_time} = deviceObjInfo
@@ -382,7 +470,9 @@ async function loginDevice(req,res)
     obj.s_id = s_id
     obj.dtns_device_id = dtns_device_id
 
+    // await g_dtnsManager.sleep(1000)
     res.json(obj)
+    console.log('[dtns-manager-login-device]res.json:',obj,static_deviceObjInfo)
 
     //发送通知(登录设备)
     obj.s_id = null //避免使用上述的s_id
@@ -2197,7 +2287,13 @@ async function queryAccountInfo(req, res) {
     }
     user_redis.set(ll_config.redis_key+":queryAccountInfo:"+user_id+random,random,120)
 
-    let {cashout_rmb_id} = await cashout_c.s_queryUserCashoutID(user_id)
+    let cashout_rmb_id = null
+    try{ 
+        let queryUserCashoutRes = await cashout_c.s_queryUserCashoutID(user_id)
+        cashout_rmb_id = queryUserCashoutRes.cashout_rmb_id
+    }catch(ex){
+        console.error('user_c->cashout_c.s_queryUserCashoutID:ex:'+ex,ex)
+    }
 
     //批量查询用户帐户信息
     let rmb = 0, vipInfo = null, gsb = 0,pcashInfo = null,score =0,userInfo = null ,vip_used_num=0,userObjList = [],cashout_rmb = 0;
@@ -2217,12 +2313,14 @@ async function queryAccountInfo(req, res) {
         ]
     ).then(async function(rets)
     {
+        console.log('user_c.queryAccountInfo-rets:',JSON.stringify(rets))
         if(rets[0] && rets[0].ret)
         {
             vipInfo = JSON.parse(JSON.parse(rets[0] .list[0].txjson).opval)
             vipInfo.vip_timeout_str = str_filter.GetDateTimeFormat(vipInfo.vip_timeout)
         }else {
-            rpc_query(VIP_API_BASE+'/fork',{token:VIP_TOKEN_ROOT,dst_token: VIP_TOKEN_NAME+"_"+user_id.split('_')[1]})
+            let tmpRet = await rpc_query(VIP_API_BASE+'/fork',{token:VIP_TOKEN_ROOT,dst_token: VIP_TOKEN_NAME+"_"+user_id.split('_')[1]})
+            console.log('vip-user-fork:',tmpRet)
         }
         if(rets[1] && rets[1].ret)
         {
@@ -2255,7 +2353,8 @@ async function queryAccountInfo(req, res) {
 
         if(!rets[6] || !rets[6].ret)
         {
-            rpc_query(MSG_API_BASE+'/fork',{token:MSG_TOKEN_ROOT,dst_token: MSG_TOKEN_NAME+"_"+user_id.split('_')[1]})
+            let msgRet = await rpc_query(MSG_API_BASE+'/fork',{token:MSG_TOKEN_ROOT,dst_token: MSG_TOKEN_NAME+"_"+user_id.split('_')[1]})
+            console.log('msg-user-fork:',msgRet)
         }
 
         // if(!rets[8] || !rets[8].ret)
@@ -2301,6 +2400,8 @@ async function queryAccountInfo(req, res) {
 
 
 
+    }).catch((error)=>{
+        console.error('user_c.queryAccountInfo-error:'+error,error)
     });
 
     let obj = {rmb, cashout_rmb,vip_info:vipInfo, gsb,pcash_info:pcashInfo,score,user_info:userInfo,
