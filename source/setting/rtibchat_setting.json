@@ -1,6 +1,6 @@
 {
-    "model":"deepseek/deepseek-chat-v3-0324:free",
-    "host":"192.168.1.5",
+    "model":"deepseek-r1:1.5b",
+    "host":"127.0.0.1",
     "session_path":"",
     "deepseek_api_key":"*",
     "ibchat_type":"deepseek-chat",
@@ -58,7 +58,7 @@
     },
     "ollama":
     {
-        "host":"192.168.1.5",
+        "host":"127.0.0.1",
         "port":11434
     }
 }

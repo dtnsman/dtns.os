@@ -9,7 +9,7 @@
     "g_dnalink_node_allow_vip_sync" : false,
     "g_dnalink_node_allow_vip_sync_params_chatid" : null,
     "g_sync_files_flag" : false,
-    "g_dweb_fee" : 1,
+    "g_dweb_fee" : 0,
     "g_system_tax" : 0.3,
     "g_system_tax_gas" : 1,
     "g_system_tax_setting" : null,

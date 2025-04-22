@@ -322,6 +322,18 @@ window.plugins = [
         author:'poplang',
         date:'2025-4-11',
         nodejs:true,
+        browser:true,
+    },
+    {
+        name:'rtibchat_manager',
+        path:'plugins/rt-ibchat-manager/index.js',
+        url:'./plugins/rt-ibchat-manager/index.js',
+        url_nodejs:'./rt-ibchat-manager/index.js',
+        index:'rtibchat_manager_c',
+        desc:'rtibchat-manager api plugin',
+        author:'poplang',
+        date:'2025-4-21',
+        nodejs:true,
         browser:false,
     }
 ]

@@ -75,8 +75,15 @@ rtibchat_c.newSession = async function(req,res)
  */
 rtibchat_c.recoverSession = async function(req,res) 
 {
-    let {user_id,history,file_id} = str_filter.get_req_data(req)
-    let session_id = 'rtibchat-session-'+Date.now()+'-'+ parseInt( Math.random()*1000000 )
+    let {user_id,history,file_id,session_id} = str_filter.get_req_data(req)
+    //如果请求参数里带着session-id，则直接从内存中恢复它（例如在智体管家中退出返回到管家列表中）
+    if(session_id)
+    {
+        let sessionInfo = sessionsMap.get(session_id)
+        if(!sessionInfo) return res.json({ret:false,msg:'sessionInfo is empty'})
+        return res.json({ret:true,msg:'success',history:sessionInfo.history,session_id})
+    }
+    session_id = 'rtibchat-session-'+Date.now()+'-'+ parseInt( Math.random()*1000000 )
     if(file_id)
     {
         let fileInfo = await rpc_api_util.s_query_token_info(OBJ_API_BASE,file_id,'assert');
@@ -109,7 +116,7 @@ rtibchat_c.recoverSession = async function(req,res)
         }
     }
     sessionsMap.set(session_id,{user_id,session_id,history:history})
-    return res.json({ret:true,msg:'success',session_id})
+    return res.json({ret:true,msg:'success',session_id,history})
 }
 /**
  * 聊天，支持历史纪录
@@ -409,7 +416,7 @@ rtibchat_c.saveSession = async function(req,res)
         fastSaveRet.img_id = img_id
         return res.json(fastSaveRet)
     }
-    res.json({ret:true,msg:'success'})
+    res.json({ret:true,msg:'success',session_id})
 }
 /**
  * 2025-3-25新增image_url
@@ -519,6 +526,13 @@ async function ibchatDeepSeek(sessionInfo,req,input_model,prompt,image_url,histo
            });
            res.on( 'end',endFunc);
         });
+        http_req.on('error',(error)=>{
+            console.error('ibchatDeepseek-http-request-error:'+error,error,prompt)
+            sessionInfo.http_req = null //置为空
+            if(req.peer) req.peer.send(JSON.stringify({channel:'rtibchat',notify_type:sessionInfo.session_id,data:{created_at:new Date(),
+                done: true,message:{content: '[error]: '+error,role: "assistant"}}}))
+            resolve(history)
+        })
          
         sessionInfo.http_req = http_req
         http_req.write(content);
@@ -574,6 +588,13 @@ async function ibchat(sessionInfo,req,input_model,prompt,history = [],stream = t
                 resolve(history)
             });
         });
+        http_req.on('error',(error)=>{
+            console.error('ibchat-http-request-error:'+error,error,prompt)
+            sessionInfo.http_req = null //置为空
+            if(req.peer) req.peer.send(JSON.stringify({channel:'rtibchat',notify_type:sessionInfo.session_id,data:{created_at:new Date(),
+                done: true,message:{content: '[error]: '+error,role: "assistant"}}}))
+            resolve(history)
+        })
         sessionInfo.http_req = http_req
         http_req.write(content);
         http_req.end();

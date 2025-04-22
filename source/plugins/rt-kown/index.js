@@ -56,7 +56,7 @@ rtkown_c.chat = async function(req,res)
         }})
         setTimeout(()=>resolve(null),10000)//10秒超时。
     }) 
-    console.log('rtkown_c.chat-result:',ret)
+    console.info('rtkown_c.chat-result:',ret)
     //read-folder-info(md)
     if(ret){
         ret.history = history //直接返回history，方便前端集成
@@ -66,19 +66,19 @@ rtkown_c.chat = async function(req,res)
 }
 rtkown_c.readFileContent =  async function(file_id)
 {
-    console.log('readFileContent:',file_id)
+    console.info('readFileContent:',file_id)
     let fileInfo = await rpc_api_util.s_query_token_info(OBJ_API_BASE,file_id,'assert');
     if(!fileInfo ) return ({ret:false,msg:'file-info is empty'})
-        console.log('readFileContent-fileInfo:',fileInfo)
+        console.info('readFileContent-fileInfo:',fileInfo)
     //得到文件后缀（以进行文件类型的判断）
     let fileType =  fileInfo.filename && fileInfo.filename.lastIndexOf('.')>=0 ? fileInfo.filename.substring(fileInfo.filename.lastIndexOf('.')+1,fileInfo.filename.length) :''
-    console.log('filetype:',fileType,rtkown_setting.file_types.indexOf(fileType.toLowerCase())>=0 )
+    console.info('filetype:',fileType,rtkown_setting.file_types.indexOf(fileType.toLowerCase())>=0 )
     if(fileInfo.type !='folder' && 
         !( fileInfo.mimetype && fileInfo.mimetype.startsWith(rtkown_setting.doc_mime_type) 
             || rtkown_setting.file_types.indexOf(fileType.toLowerCase())>=0 ) ) 
         return ({ret:false,msg:'file-info mime-type unmatch'})
     let data = await ifileDb.getDataByKey(fileInfo.hash)
-    console.log('readFileContent-data:',data,file_id,fileInfo)
+    console.info('readFileContent-data:',data,file_id,fileInfo)
     if(data && data.data &&data.data.length>0)
     {
         let buffer = data.data
@@ -123,6 +123,6 @@ rtkown_c.readFolderFileContents =  async function(folder_id ,existMapP = null)
     }
     else 
         files = []
-    console.log('readFolderFileContents-result:',files)
+    console.info('readFolderFileContents-result:',files)
     return files
 }
