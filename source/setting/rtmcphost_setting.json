@@ -1,0 +1,5 @@
+{
+    "name":"rtmcphost setting",
+    "description":"rt-mcp-host query api",
+    "api_url":"http://192.168.1.15:17925"
+}

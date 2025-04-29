@@ -68,9 +68,9 @@ rtibchat_manager_c.new = async function (req,res)
             "role":"system",
             "content":system_role_prompt
         },
-        {"content": "ok","role": "assistant"},
-        {"role":"user","content":JSON.stringify(results)},
-        {"content": "ok","role": "assistant"}
+        {"content": "好的","role": "assistant"},
+        {"role":"user","content":'```json\n'+JSON.stringify(results)+'\n```'},
+        {"content": "收到，请输入你的智体应用需求","role": "assistant"}
     ]
     let newSessionRet = await new Promise((resolve)=>{
         rtibchat_c.recoverSession ({params:{user_id,history:JSON.stringify(history)}},{json:function(data){

@@ -56,7 +56,7 @@ rtkown_c.chat = async function(req,res)
         }})
         setTimeout(()=>resolve(null),10000)//10秒超时。
     }) 
-    console.info('rtkown_c.chat-result:',ret)
+    console.log('rtkown_c.chat-result:',ret)
     //read-folder-info(md)
     if(ret){
         ret.history = history //直接返回history，方便前端集成
@@ -66,19 +66,28 @@ rtkown_c.chat = async function(req,res)
 }
 rtkown_c.readFileContent =  async function(file_id)
 {
-    console.info('readFileContent:',file_id)
+    console.log('readFileContent:',file_id)
     let fileInfo = await rpc_api_util.s_query_token_info(OBJ_API_BASE,file_id,'assert');
     if(!fileInfo ) return ({ret:false,msg:'file-info is empty'})
-        console.info('readFileContent-fileInfo:',fileInfo)
+        console.log('readFileContent-fileInfo:',fileInfo)
     //得到文件后缀（以进行文件类型的判断）
     let fileType =  fileInfo.filename && fileInfo.filename.lastIndexOf('.')>=0 ? fileInfo.filename.substring(fileInfo.filename.lastIndexOf('.')+1,fileInfo.filename.length) :''
-    console.info('filetype:',fileType,rtkown_setting.file_types.indexOf(fileType.toLowerCase())>=0 )
+    console.log('filetype:',fileType,rtkown_setting.file_types.indexOf(fileType.toLowerCase())>=0 )
     if(fileInfo.type !='folder' && 
         !( fileInfo.mimetype && fileInfo.mimetype.startsWith(rtkown_setting.doc_mime_type) 
             || rtkown_setting.file_types.indexOf(fileType.toLowerCase())>=0 ) ) 
-        return ({ret:false,msg:'file-info mime-type unmatch'})
+    {
+        //先行请求转为相应的md-text文本内容（如果处理失败再返回失败信息） 2025-4-24新增
+        let mdRes = await new Promise((resolve)=>{
+            rtmarkdown_c.file2md({params:{file_id}},{json:function(data){
+                resolve(data)
+            }})
+        })
+        if(!mdRes ||!mdRes.ret) return ({ret:false,msg:'file-info mime-type unmatch'})
+        return {ret:true,msg:'success',content:mdRes.text,fileInfo}
+    }
     let data = await ifileDb.getDataByKey(fileInfo.hash)
-    console.info('readFileContent-data:',data,file_id,fileInfo)
+    console.log('readFileContent-data:',data,file_id,fileInfo)
     if(data && data.data &&data.data.length>0)
     {
         let buffer = data.data
@@ -123,6 +132,6 @@ rtkown_c.readFolderFileContents =  async function(folder_id ,existMapP = null)
     }
     else 
         files = []
-    console.info('readFolderFileContents-result:',files)
+    console.log('readFolderFileContents-result:',files)
     return files
 }

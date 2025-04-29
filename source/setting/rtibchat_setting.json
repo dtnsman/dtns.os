@@ -23,35 +23,35 @@
         "deepseek/deepseek-r1:free":{
             "host":"openrouter.ai",
             "port":443,
-            "api_key":"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",
+            "api_key":"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",
             "api_path":"/api/v1/chat/completions",
             "max_tokens":8192
         },
         "google/gemini-2.0-flash-exp:free":{
             "host":"openrouter.ai",
             "port":443,
-            "api_key":"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",
+            "api_key":"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",
             "api_path":"/api/v1/chat/completions",
             "max_tokens":8192
         },
         "google/gemini-2.5-pro-exp-03-25:free":{
             "host":"openrouter.ai",
             "port":443,
-            "api_key":"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",
+            "api_key":"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",
             "api_path":"/api/v1/chat/completions",
             "max_tokens":8192
         },
         "deepseek/deepseek-chat-v3-0324:free":{
             "host":"openrouter.ai",
             "port":443,
-            "api_key":"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",
+            "api_key":"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",
             "api_path":"/api/v1/chat/completions",
             "max_tokens":8192
         },
         "qwen/qwen2.5-vl-32b-instruct:free":{
             "host":"openrouter.ai",
             "port":443,
-            "api_key":"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",
+            "api_key":"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",
             "api_path":"/api/v1/chat/completions",
             "max_tokens":8192
         }

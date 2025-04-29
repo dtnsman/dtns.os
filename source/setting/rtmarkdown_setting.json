@@ -1,0 +1,8 @@
+{
+    "name":"rtmarkdown setting",
+    "description":"markdown-mcp query api",
+    "api_url":"http://192.168.1.15:17925",
+    "server_name": "markitdown-mcp",
+    "tool_name": "convert_to_markdown",
+    "cached_path":null
+}
